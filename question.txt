@@ -1,0 +1,66 @@
+sometimes i don't have access to the FB variable to make API calls.
+
+after try and catch, it sums up that the SDK is not initialized. i put a console.log that should print: "inside the sdk".
+
+sometimes it prints it, sometimes it doesn't.
+
+that's how the problematic javascript looks like. please see the "componentDidMount" method.
+
+    import React, {Component} from 'react';
+    
+    export default class App extends Component {
+        constructor(props) {
+            super(props);
+            this.state = {FBloaded: false,tries: 0};
+        }
+        render() {
+            return <div > hello < /div>
+        }
+    
+        componentDidMount() {
+            console.log("trying sdk ...");
+            window.fbAsyncInit = () => {
+                FB.init({
+                    appId: '326022817735322',
+                    xfbml: true,
+                    version: 'v2.8'
+                });
+                FB.AppEvents.logPageView();
+                console.log("inside the sdk");
+                this.setState({
+                    FBloaded: true
+                })
+    
+            };
+            (function(d, s, id) {
+                var js,
+                    fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) {
+                    return;
+                }
+                js = d.createElement(s);
+                js.id = id;
+                js.src = "//connect.facebook.net/en_US/sdk.js";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        }
+    }
+
+less important, but maybe relevant, 
+index.js code:
+
+    import graph from 'fb-react-sdk';
+    import React from 'react';
+    import ReactDOM from 'react-dom';
+    import {Provider} from 'react-redux';
+    import {createStore, applyMiddleware} from 'redux';
+    import App from './components/app.jsx';
+    import reducers from './reducers';
+    const createStoreWithMiddleware = applyMiddleware()(createStore);
+    
+    ReactDOM.render(
+        <Provider store={createStoreWithMiddleware(reducers)}>
+        <App/>
+    </Provider>, document.querySelector('.container'));
+
+index.html code:
