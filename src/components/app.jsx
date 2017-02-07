@@ -4,36 +4,50 @@ export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            FBloaded: false
+            FBloaded: false,
+            tries: 0
 
         };
 
     }
     render() {
-        console.log(this.state);
-        return (
-            <div>{this.sayHello()}</div>
-        );
+        return <div>{this.sayHello()}
+        </div>
     }
+
     sayHello() {
-        return <p>
-            hello
-        </p>
+        if (this.state.FBloaded) {
+            return (
+                <div>success !!!!</div>
+            )
+        } else {
+            return <p>loading ...</p>
+        }
     }
 
     componentDidMount() {
-        var self = this;
-        FB.login(function(response) {
-            if (response.authResponse) {
-                console.log('Welcome!  Fetching your information.... ');
-
-                FB.api('/me', function(response) {
-                    console.log('Good to see you, ' + response.name + '.');
-                });
-            } else {
-                console.log('User cancelled login or did not fully authorize.');
-            }
-        });
-
+        this.fbSDK();
     }
+    fbSDK() {
+        console.log("trying sdk ...");
+        window.fbAsyncInit = () => {
+            FB.init({appId: '326022817735322', xfbml: true, version: 'v2.8'});
+            FB.AppEvents.logPageView();
+            console.log("inside the sdk");
+            this.setState({FBloaded: true})
+
+        };
+        (function(d, s, id) {
+            var js,
+                fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    }
+
 }
